@@ -1,4 +1,5 @@
 import os
+import sys
 import pyautogui
 import configparser
 
@@ -6,7 +7,7 @@ import configparser
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # 設定ファイルのパスを指定
-config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../config.ini')
+config_path = os.path.join(os.path.dirname(os.path.abspath(sys.executable)), 'config.ini')
 
 # configparserの設定
 config = configparser.ConfigParser()
