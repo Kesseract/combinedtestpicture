@@ -1,66 +1,35 @@
 import os
-import sys
-import pyautogui
-import configparser
 
-# 現在のスクリプトのあるディレクトリを取得
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# 設定ファイルのパスを指定
-config_path = os.path.join(os.path.dirname(os.path.abspath(sys.executable)), 'config.ini')
-
-# configparserの設定
-config = configparser.ConfigParser()
-config.read(config_path)
-
-# スクリーンショットの範囲を設定ファイルから読み込む
-left = config.getint('DEFAULT', 'Left')
-top = config.getint('DEFAULT', 'Top')
-width = config.getint('DEFAULT', 'Width')
-height = config.getint('DEFAULT', 'Height')
-
-base_dir = "../data"  # 保存先ディレクトリを指定
-
-# ディレクトリが存在しない場合、作成
-if not os.path.exists(base_dir):
-    os.makedirs(base_dir)
-
-test_case_dir = base_dir
+from config_manager import ConfigManager
+from test_case_manager import TestCaseManager
+from screenshot_taker import ScreenshotTaker
 
 
-def print_dir_contents(directory):
-    print("テストケース一覧:")
-    for name in os.listdir(directory):
-        if os.path.isdir(os.path.join(directory, name)):
-            print(name)
+class MainApplication:
+    def __init__(self):
+        self.config_manager = ConfigManager()
+        self.test_case_manager = TestCaseManager("../test_cases.xlsx")
+        self.screenshot_taker = ScreenshotTaker(self.config_manager, self.test_case_manager)
+
+    def run(self):
+        self.screenshot_taker.start_automatic_screenshot_taking()
+        self.test_case_manager.load_test_cases_from_excel('../test_cases.xlsx')
+        self.test_case_manager.create_test_case_folders()
+        while True:
+            print(self.config_manager.get_message("existing_test_cases"))
+            existing_cases = os.listdir('../data/')
+            for i, case in enumerate(existing_cases, 1):
+                print(f"{case}")
+            test_case_name = input(self.config_manager.get_message("input_test_case"))
+            if test_case_name == 'q':
+                break
+            while True:
+                step = input(self.config_manager.get_message("input_image_name"))
+                if step == ' ':
+                    break
+                self.screenshot_taker.manual_take_screenshot(test_case_name, int(step))
 
 
-while True:
-    print_dir_contents(base_dir)
-    print("テストケース名を入力してください。 ('q'キーで終了):")
-    dir_name = input()
-
-    if dir_name == 'q':
-        break
-    elif dir_name == " ":
-        continue
-    else:
-        test_case_dir = os.path.join(base_dir, dir_name)
-        if not os.path.exists(test_case_dir):
-            os.makedirs(test_case_dir)
-
-    while True:
-        print("保存する画像名を入力してください。 (スペースキーでフォルダ変更、'q'キーで終了):")
-        filename_num = input()
-
-        if filename_num == 'q':
-            exit()
-        elif filename_num == " ":
-            break
-
-        # 画面全体のスクリーンショットを取得
-        screenshot = pyautogui.screenshot(region=(left, top, width, height))
-        # 入力された番号でファイル名を作成
-        filename = f"{filename_num}.png"
-        # ファイルを保存
-        screenshot.save(os.path.join(test_case_dir, filename))
+if __name__ == "__main__":
+    app = MainApplication()
+    app.run()
