@@ -8,12 +8,12 @@ from screenshot_taker import ScreenshotTaker
 class MainApplication:
     def __init__(self):
         self.config_manager = ConfigManager()
-        self.test_case_manager = TestCaseManager("../../test_cases.xlsx")
+        self.test_case_manager = TestCaseManager("../test_cases.xlsx")
         self.screenshot_taker = ScreenshotTaker(self.config_manager, self.test_case_manager)
 
     def run(self):
         self.screenshot_taker.start_automatic_screenshot_taking()
-        self.test_case_manager.load_test_cases_from_excel('../../test_cases.xlsx')
+        self.test_case_manager.load_test_cases_from_excel('../test_cases.xlsx')
         self.test_case_manager.create_test_case_folders()
         while True:
             print(self.config_manager.get_message("existing_test_cases"))
