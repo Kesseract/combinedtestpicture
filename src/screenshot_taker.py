@@ -18,7 +18,7 @@ class ScreenshotTaker:
 
     def manual_take_screenshot(self, test_case_name, step):
         self.test_case_name = test_case_name
-        self.step = step
+        self.step = self.test_case_manager.test_cases[test_case_name][step-1]
         self.take_screenshot()
 
     def automatic_take_screenshot(self):

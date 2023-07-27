@@ -12,8 +12,10 @@ class TestCaseManager:
         workbook = openpyxl.load_workbook(excel_path)
         sheet = workbook.active
         for row in sheet.iter_rows(min_row=2, values_only=True):  # 1行目はヘッダーなので読み飛ばす
-            test_case_name = row[0]
-            self.test_cases[test_case_name] = [step for step in row[1:] if step is not None]
+            if row[0]:  # Check if testcase name is not empty
+                test_case_name = row[0]
+                steps = [i for i, x in enumerate(row[1:], start=1) if x is not None]
+                self.test_cases[test_case_name] = steps
 
     def create_test_case_folders(self):
         for test_case_name in self.test_cases:
@@ -29,7 +31,7 @@ class TestCaseManager:
         while self.sheet.cell(row=self.current_row, column=1).value:
             while self.sheet.cell(row=self.current_row, column=self.current_step + 1).value:
                 self.current_step += 1
-                return self.sheet.cell(row=self.current_row, column=1).value, self.current_step
+                return self.sheet.cell(row=self.current_row, column=1).value, self.current_step - 1
             self.current_row += 1
             self.current_step = 1
         return None, None
