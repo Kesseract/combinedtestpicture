@@ -5,7 +5,8 @@ import json
 class ConfigManager:
     def __init__(self):
         self.config = configparser.ConfigParser()
-        self.config.read('../config.ini')
+        with open('../config.ini', 'r', encoding='utf-8') as f:
+            self.config.read_file(f)
         with open('../messages.json', 'r', encoding='utf-8') as f:
             self.messages = json.load(f)
 
