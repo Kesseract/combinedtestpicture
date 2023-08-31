@@ -32,9 +32,7 @@ class MainApplication:
                 split_input = step.split(' ')
 
                 if len(split_input) < 2:
-                    if step == ' ':
-                        break
-                    elif step == 'q':
+                    if step == 'q':
                         break
                     if '-' in step:
                         split_substep = tuple(map(int, step.split('-')))
